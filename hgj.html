@@ -1,0 +1,49 @@
+<HTML>
+<BODY>
+<canvas id = 'lab8' width = '300' height = '300'>
+</canvas>
+<script>
+    var canvas = document.getElementById("lab8");
+    canvas.oncontextmenu = function() { return false; }
+    var ctx = canvas.getContext("2d", {antialias:false,depth: false});
+    var plane1 = [ {x:20, y:220, z:40},{x:150, y:40, z:40}, {x:200, y:220, z:40}];
+    var plane2 = [ {x:150, y:40, z:40}, {x:200, y:220, z:40}, {x:250, y:170, z:400}];
+    var L = {x:100, y:120, z:100};
+    var col = "0x32cd32";
+    function fillFigure(fig, col) {
+        ctx.fillStyle = col;
+        ctx.beginPath();
+        ctx.moveTo(fig[0].x,fig[0].y);
+        for(var i in fig){
+            ctx.lineTo(fig[i].x,fig[i].y);
+        }
+        ctx.closePath();
+        ctx.fill();
+    }
+    function plat (L, plane, col){
+        var AB = { x: plane[1].x-plane[0].x,
+            y: plane[1].y-plane[0].y,
+            z: plane[1].z-plane[0].z};
+        var AC = { x: plane[2].x-plane[0].x,
+            y: plane[2].y-plane[0].y,
+            z: plane[2].z-plane[0].z};
+        var Ny = (AB.z*AC.x-AC.z*AB.x)/(AC.y*AB.x-AB.y*AC.x);
+        var N = {x: -1*(Ny*AB.y+AB.z)/AB.x, y: Ny, z:1 };
+        console.log(N);
+        var luch = {x: plane[0].x-L.x, y: plane[0].y-L.y, z: plane[0].z-L.z};
+        var cos = (N.x*luch.x+N.y*luch.y+N.z*luch.z)/Math.sqrt(N.x*N.x+N.y*N.y+N.z*N.z)/Math.sqrt(luch.x*luch.x+luch.y*luch.y+luch.z*luch.z);
+        var R = Math.round(((col&0xff0000)>>16)*Math.abs(cos));
+        var G = Math.round(((col&0x00ff00)>>8)*Math.abs(cos));
+        var B = Math.round(((col&0x0000ff))*Math.abs(cos));
+        var fig = [	{x:plane[0].x , y:plane[0].y },
+            {x:plane[1].x , y:plane[1].y },
+            {x:plane[2].x , y:plane[2].y }];
+        var newColor = '#'+R.toString(16) + G.toString(16) + B.toString(16);
+        console.log(newColor);
+        fillFigure(fig, newColor);
+    }
+    plat(L, plane1, col);
+    plat(L, plane2, col);
+</script>
+</BODY>
+</HTML>
